@@ -5,8 +5,23 @@
 (tool-bar-mode   -1)
 (tooltip-mode    -1)
 (menu-bar-mode   -1)
-;; Package configs everything must come after the package initialization
 
+;; set transparency
+(set-frame-parameter (selected-frame) 'alpha '(80 80))
+(add-to-list 'default-frame-alist 'alpha '(80 80))
+;;line mode
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                treemacs-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; Package configs everything must come after the package initialization
 (require 'package)
 (setq package-enable-at-startup nil)
 (setq package-archives '(("org"   . "http://orgmode.org/elpa/")
@@ -25,7 +40,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (doom-modeline evil counsel ivy-rich ivy use-package))))
+    (which-key rainbow-delimiters doom-modeline evil counsel ivy-rich ivy use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -35,9 +50,7 @@
 (setq use-package-always-ensure t)
 ;;setting up ivy
 
-
-
-
+;;ivy for fuzzy finding and many things with counsel
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -89,9 +102,14 @@
 
   :custom ( doom-modeline-height 10 ))
 
-;; set transparency
-(set-frame-parameter (selected-frame) 'alpha '(80 80))
-(add-to-list 'default-frame-alist '(alpha 80 80)
+;;rainbow delimeter for paranthesis
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
-
-
+;;which key
+(use-package which-key
+  :defer 0
+  :diminish which-key-mode
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 0.6))
