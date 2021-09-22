@@ -17,7 +17,7 @@
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(package-selected-packages
    (quote
-    (helpful which-key rainbow-delimiters doom-modeline evil counsel ivy-rich ivy use-package))))
+    (evil-leader key-chord evil-collection general helpful which-key rainbow-delimiters doom-modeline evil counsel ivy-rich ivy use-package))))
 
 ;; set transparency
 (set-frame-parameter (selected-frame) 'alpha '(80 80))
@@ -107,11 +107,6 @@
 (use-package all-the-icons)
 ;;doom mode line
 
-;; Vim mode
-(use-package evil
-  :ensure t
-  :config
-  (evil-mode 1))
 
 (use-package doom-modeline
   :ensure t
@@ -143,4 +138,45 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
+
+;;general package for key bindings
+(use-package general
+  :after evil
+  :config
+  (general-create-definer efs/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+
+  (efs/leader-keys
+    "t"  '(:ignore t :which-key "toggles")
+    "tt" '(counsel-load-theme :which-key "choose theme")
+    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/Emacs.org")))))
+
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+; key chord for the  jk keys to wo jk keys to work
+(use-package key-chord)
+(key-chord-mode 1)
+(key-chord-define evil-insert-state-map  "jk" 'evil-normal-state)
 
