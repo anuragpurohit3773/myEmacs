@@ -6,6 +6,19 @@
 (tooltip-mode    -1)
 (menu-bar-mode   -1)
 
+;;for split-window-vertically
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ediff-diff-options "-w")
+ '(ediff-split-window-function (quote split-window-vertically))
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(package-selected-packages
+   (quote
+    (helpful which-key rainbow-delimiters doom-modeline evil counsel ivy-rich ivy use-package))))
+
 ;; set transparency
 (set-frame-parameter (selected-frame) 'alpha '(80 80))
 (add-to-list 'default-frame-alist 'alpha '(80 80))
@@ -33,14 +46,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (which-key rainbow-delimiters doom-modeline evil counsel ivy-rich ivy use-package))))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -77,11 +83,22 @@
 (use-package counsel
   :bind (("C-M-j" . 'counsel-switch-buffer)
          :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
+         ("C-r" . 'counsel-minibuffer-history)
+                 )
   :custom
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
+(use-package counsel
+  :bind (
+         ("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . counsel-minibuffer-history))
+  :config
+  (setq ivy-initial-inputs-alist nil))
+
 (use-package doom-themes
   :ensure t
   :config
@@ -113,3 +130,17 @@
   :config
   (which-key-mode)
   (setq which-key-idle-delay 0.6))
+
+
+;;helpful for adding more to the descriptions
+(use-package helpful
+  :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
